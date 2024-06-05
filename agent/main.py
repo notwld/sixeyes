@@ -1,0 +1,207 @@
+from flask import Flask, jsonify, request, send_from_directory
+import os
+import platform
+import psutil
+import requests
+from datetime import datetime
+from flask_cors import CORS
+from urllib.parse import unquote
+app = Flask(__name__)
+CORS(app)
+BASE_DIR = '/home/salad/Desktop'
+
+def list_files(directory):
+    files = []
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        if os.path.isfile(file_path):
+            files.append({'name': filename, 'type': 'file'})
+        elif os.path.isdir(file_path):
+            files.append({'name': filename + '/', 'type': 'directory'})
+    return files
+
+def get_file_content(file_path):
+    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        return f.read()
+
+@app.route('/')
+def file_explorer():
+    path = request.args.get('path', '')
+    full_path = os.path.join(BASE_DIR, path)
+
+    if not os.path.exists(full_path):
+        return jsonify({'error': f'Path does not exist: {path}'}), 404
+
+    files = list_files(full_path)
+    return jsonify({'files': files, 'current_path': path})
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    path = request.form['path']
+    upload_dir = os.path.join(BASE_DIR, path)
+
+    if 'file' in request.files:
+        file = request.files['file']
+        if file.filename != '':
+            filename = os.path.join(upload_dir, file.filename)
+            file.save(filename)
+            return jsonify({'message': 'File uploaded successfully'}), 200
+
+    return jsonify({'error': 'No file uploaded'}), 400
+
+@app.route('/delete', methods=['POST'])
+def delete_file():
+    data = request.get_json()
+    path = data.get('path')
+    filename = data.get('filename')
+    file_path = os.path.join(BASE_DIR, path, filename)
+
+    if os.path.exists(file_path):
+        if os.path.isdir(file_path):
+            os.rmdir(file_path)
+        else:
+            os.remove(file_path)
+        return jsonify({'message': 'File deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
+@app.route('/rename', methods=['POST'])
+def rename_file():
+    data = request.get_json()
+    path = data.get('path', '')
+    old_name = data.get('old_name', '')
+    new_name = data.get('new_name', '')
+
+    old_path = os.path.join(BASE_DIR, path, old_name)
+    new_path = os.path.join(BASE_DIR, path, new_name)
+
+    if os.path.exists(old_path):
+        os.rename(old_path, new_path)
+        return jsonify({'message': 'File renamed successfully'}), 200
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
+@app.route('/create_file', methods=['POST'])
+def create_file():
+    data = request.get_json()
+    path = data.get('path')
+    file_name = data.get('file_name')
+    file_content = data.get('file_content')
+    file_path = os.path.join(BASE_DIR, path, file_name)
+
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(file_content)
+        return jsonify({'message': 'File created successfully'}), 200
+    except Exception as err:
+        return jsonify({'error': str(err)}), 500
+
+
+@app.route('/get_content', methods=['POST'])
+def get_file_content_api():
+    print(request.json)  # Debugging: Print request JSON data
+    data = request.get_json()
+    path = data.get('path')
+    filename = data.get('filename')
+    file_path = os.path.join(BASE_DIR, path, filename)
+
+    if os.path.exists(file_path):
+        content = get_file_content(file_path)
+        return jsonify({'content': content}), 200
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
+
+@app.route('/download/<path:file_path>', methods=['GET'])
+def download_file(file_path):
+    try:
+        # Decode the file path
+        decoded_file_path = unquote(file_path)
+
+        # Construct the absolute file path
+        absolute_file_path = os.path.normpath(os.path.join(BASE_DIR, decoded_file_path))
+        # print(absolute_file_path)
+        # Check if the resolved absolute path is within the allowed directory (BASE_DIR)
+        if not absolute_file_path.startswith(BASE_DIR):
+            return jsonify({'error': 'Invalid file path or unauthorized access'}), 403
+
+        # Check if the file exists and is a regular file
+        if not os.path.isfile(absolute_file_path):
+            return jsonify({'error': 'File not found or invalid path'}), 404
+
+        # Serve the file for download
+        # print(decoded_file_path.split(BASE_DIR)[0],decoded_file_path.split(BASE_DIR)[1])
+        return send_from_directory(os.path.dirname(absolute_file_path), os.path.basename(absolute_file_path), as_attachment=True)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+def get_public_ip():
+    try:
+        response = requests.get('https://ipinfo.io/ip')
+        public_ip = response.text.strip()
+        return public_ip
+    except requests.RequestException as e:
+        print(f"Error getting public IP: {e}")
+        return None
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+def get_system_info():
+    system_info = {}
+
+    uname = platform.uname()
+    system_info['System'] = uname.system
+    system_info['NodeName'] = uname.node
+    system_info['Release'] = uname.release
+    system_info['Version'] = uname.version
+    system_info['Machine'] = uname.machine
+    system_info['Processor'] = uname.processor
+    
+    boot_time_timestamp = psutil.boot_time()
+    bt = datetime.fromtimestamp(boot_time_timestamp)
+    system_info['BootTime'] = f"{bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}"
+    
+    system_info['PhysicalCores'] = psutil.cpu_count(logical=False)
+    system_info['TotalCores'] = psutil.cpu_count(logical=True)
+    cpufreq = psutil.cpu_freq()
+    system_info['MaxFrequency'] = f"{cpufreq.max:.2f}Mhz"
+    system_info['MinFrequency'] = f"{cpufreq.min:.2f}Mhz"
+    system_info['CurrentFrequency'] = f"{cpufreq.current:.2f}Mhz"
+    
+    cpu_usage_per_core = {}
+    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
+        cpu_usage_per_core[f"Core_{i}"] = f"{percentage}"
+    system_info['CPUUsagePerCore'] = cpu_usage_per_core
+    system_info['TotalCPUUsage'] = f"{psutil.cpu_percent()}"
+    
+    memory_info = {}
+    svmem = psutil.virtual_memory()
+    memory_info['Total'] = get_size(svmem.total)
+    memory_info['Available'] = get_size(svmem.available)
+    memory_info['Used'] = get_size(svmem.used)
+    memory_info['Percentage'] = f"{svmem.percent}"
+    system_info['MemoryInformation'] = memory_info
+    
+    swap_info = {}
+    swap = psutil.swap_memory()
+    swap_info['Total'] = get_size(swap.total)
+    swap_info['Free'] = get_size(swap.free)
+    swap_info['Used'] = get_size(swap.used)
+    swap_info['Percentage'] = f"{swap.percent}"
+    system_info['Swap'] = swap_info
+
+    system_info['PublicIP'] = get_public_ip()
+
+    return system_info
+
+@app.route('/system_info', methods=['GET'])
+def system_info():
+    return jsonify(get_system_info())
+
+if __name__ == '__main__':
+    app.run(debug=True)
