@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Paper, Typography } from '@mui/material';
-import ReactSpeedometer from 'react-d3-speedometer';
-import InfoComponent from '../components/InfoComponent';
+import { Box, Grid, Typography } from '@mui/material';
+import { useParams } from 'react-router-dom';
 import DialCard from '../components/DialCard';
+import InfoComponent from '../components/InfoComponent';
 
 const MainDashboard = () => {
+  const { instanceName } = useParams();
   const [systemInfo, setSystemInfo] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:5000/system_info'); // Replace with your actual API endpoint
+      const response = await fetch(`http://localhost:5000/instance_info/${instanceName}`);
       const data = await response.json();
       setSystemInfo(data);
     };
 
     fetchData();
-    const intervalId = setInterval(fetchData, 5000); // Poll every 5 seconds
+    const intervalId = setInterval(fetchData, 5000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [instanceName]);
 
   if (!systemInfo) {
     return <div>Loading...</div>;
@@ -26,7 +27,10 @@ const MainDashboard = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-     <Grid container spacing={3} justifyContent="center">
+      <Typography variant="h4" gutterBottom>
+        Status for {instanceName}
+      </Typography>
+      <Grid container spacing={3} justifyContent="center">
         <Grid item>
           <DialCard title="CPU Usage" usage={parseFloat(systemInfo.TotalCPUUsage)} />
         </Grid>

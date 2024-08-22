@@ -9,8 +9,8 @@ import { Outlet } from 'react-router-dom';
 
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
-
+  const [darkMode, setDarkMode] = useState(true);
+  const isLoggedIn = localStorage.getItem('isUserLoggedIn');
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
@@ -21,7 +21,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div style={{ display: 'flex' }}>
-        <Sidebar darkMode={darkMode} setDarkMode={setDarkMode} />
+        {isLoggedIn && <Sidebar setDarkMode={setDarkMode} darkMode={darkMode} />}
         <div style={{ flexGrow: 1 }}>
         <Outlet />
         </div>

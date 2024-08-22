@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Switch, FormControlLabel } from '@mui/material';
+import { Box, Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Switch, FormControlLabel, Button, Typography } from '@mui/material';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import FolderIcon from '@mui/icons-material/Folder';
 import BuildIcon from '@mui/icons-material/Build';
 import DnsIcon from '@mui/icons-material/Dns';
 import CloudIcon from '@mui/icons-material/Cloud';
 import StorageIcon from '@mui/icons-material/Storage';
+import { AddAPhoto, AddIcCallOutlined, PanTool, ToggleOn } from '@mui/icons-material';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -29,12 +30,12 @@ function TabPanel(props) {
 }
 
 const Sidebar = ({ darkMode, setDarkMode }) => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  const [instances, setInstances] = React.useState([]);
   return (
     <Box sx={{ display: 'flex', height: '100vh' }} my={2}>
       
@@ -47,12 +48,29 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
           variant="fullWidth"
           sx={{ borderBottom: 1, borderColor: 'divider' }}
         >
-          <Tab label="" />
+          <Tab label="" disabled={!instances?.length > 0}/>
           <Tab label="Instances" />
         </Tabs>
         <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
-          <TabPanel value={value} index={0}>
+          {instances?.length > 0 && <TabPanel value={value} index={0}>
             <List component="nav">
+            <ListItem sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                }}>
+                  
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      window.location.href = '/agent/add';
+
+                    }}
+                  >
+                    + Add New
+                  </Button>
+                </ListItem>
               <ListItem button to="/terminal">
                 <ListItemIcon>
                   <TerminalIcon />
@@ -78,21 +96,39 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
                 <ListItemText primary="Ports" />
               </ListItem>
             </List>
-          </TabPanel>
+          </TabPanel>}
           <TabPanel value={value} index={1}>
             <List component="nav">
-              <ListItem button to="/aws">
-                <ListItemIcon>
-                  <CloudIcon />
-                </ListItemIcon>
-                <ListItemText primary="AWS" />
-              </ListItem>
-              <ListItem button to="/linode">
-                <ListItemIcon>
-                <CloudIcon />
-                </ListItemIcon>
-                <ListItemText primary="Linode" />
-              </ListItem>
+              {instances?.length > 0 ? instances?.map((instance) => {
+                return (
+                  <ListItem key={instance.id} button>
+                    <ListItemIcon>
+                      <CloudIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={instance.name} />
+                  </ListItem>
+                );
+              }) : (
+                <ListItem sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                }}>
+                  <Typography variant="h7" textAlign="center" color="textSecondary" py={3}>
+                    No instances found
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      window.location.href = '/agent/add';
+
+                    }}
+                  >
+                    + Add New
+                  </Button>
+                </ListItem>
+              )}
             </List>
           </TabPanel>
         </Box>
