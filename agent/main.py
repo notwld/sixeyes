@@ -3,12 +3,24 @@ import os
 import platform
 import psutil
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_cors import CORS
-from urllib.parse import unquote
+from flask_socketio import SocketIO, emit
+from socketio import AsyncClient
+import asyncio
+import threading
+
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+sio = AsyncClient()
+
 BASE_DIR = '/home/salad/Desktop'
+
+# Caching variables
+cached_public_ip = None
+last_ip_fetch_time = None
+IP_CACHE_DURATION = timedelta(minutes=1)  # Cache duration of 15 minutes
 
 def list_files(directory):
     files = []
@@ -135,14 +147,22 @@ def download_file(file_path):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 def get_public_ip():
-    try:
-        response = requests.get('https://ipinfo.io/ip')
-        public_ip = response.text.strip()
-        return public_ip
-    except requests.RequestException as e:
-        print(f"Error getting public IP: {e}")
-        return None
+    global cached_public_ip, last_ip_fetch_time
+
+    current_time = datetime.now()
+
+    if cached_public_ip is None or last_ip_fetch_time is None or (current_time - last_ip_fetch_time) > IP_CACHE_DURATION:
+        try:
+            response = requests.get('https://ipinfo.io/ip')
+            cached_public_ip = response.text.strip()
+            last_ip_fetch_time = current_time
+        except requests.RequestException as e:
+            print(f"Error getting public IP: {e}")
+            return None
+
+    return cached_public_ip
 
 def get_size(bytes, suffix="B"):
     factor = 1024
@@ -203,5 +223,37 @@ def get_system_info():
 def system_info():
     return jsonify(get_system_info())
 
+
+@sio.event
+async def connect():
+    print("Connected to the master server")
+    ip = get_public_ip()
+    await sio.emit('get_system_info_from_agent', {
+        "public_ip": ip
+    })
+
+@sio.event
+async def disconnect():
+    print("Disconnected from the master server")
+    ip = get_public_ip()
+    await sio.emit('get_system_info_from_agent', {
+        "public_ip": ip
+    })
+
+async def start_socketio_client():
+    try:
+        await sio.connect('http://192.168.1.106:5000')
+        await sio.wait()  # Keep the connection alive
+    except Exception as e:
+        print(f"Failed to connect to master server: {e}")
+
+def run_socketio_client():
+    asyncio.run(start_socketio_client())
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    client_thread = threading.Thread(target=run_socketio_client)
+    client_thread.daemon = True 
+    client_thread.start()
+
+    # Start the Flask-SocketIO server
+    socketio.run(app, debug=True, host="0.0.0.0", port=3000)

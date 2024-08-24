@@ -11,7 +11,7 @@ const InfoComponent = ({ systemInfo }) => {
       const isHighlighted = highlightedSpecs.includes(key);
 
       rows.push(
-        <TableRow key={key}>
+        <TableRow key={key} >
           <TableCell>{key}</TableCell>
           <TableCell className={isHighlighted ? 'highlighted-value' : ''}>
             <Typography>{typeof value === 'object' ? JSON.stringify(value) : value}</Typography>
@@ -24,7 +24,7 @@ const InfoComponent = ({ systemInfo }) => {
   };
 
   return (
-    <Card sx={{ mt: 4, p: 2 }}>
+    <Card sx={{ mt: 4, p: 2, borderRadius:3 }}>
       <Typography variant="h6">System Information</Typography>
       <Table sx={{ mt: 2 }}>
         <TableBody>

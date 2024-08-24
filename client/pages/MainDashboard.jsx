@@ -10,13 +10,13 @@ const MainDashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`http://localhost:5000/instance_info/${instanceName}`);
+      const response = await fetch(`http://localhost:3000/system_info`);
       const data = await response.json();
       setSystemInfo(data);
     };
 
     fetchData();
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(fetchData, 3000);
 
     return () => clearInterval(intervalId);
   }, [instanceName]);
@@ -26,12 +26,14 @@ const MainDashboard = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Status for {instanceName}
-      </Typography>
-      <Grid container spacing={3} justifyContent="center">
-        <Grid item>
+    <Box sx={{ flexGrow: 1, p: 3,borderRadius:12 }}>
+      
+      <Grid container spacing={3} justifyContent="center" >
+        <Grid item sx={
+        {
+          borderRadius:12
+        }
+      }>
           <DialCard title="CPU Usage" usage={parseFloat(systemInfo.TotalCPUUsage)} />
         </Grid>
         <Grid item>
@@ -41,7 +43,7 @@ const MainDashboard = () => {
           <DialCard title="Swap Usage" usage={parseFloat(systemInfo.Swap.Percentage)} />
         </Grid>
       </Grid>
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ mt: 3,borderRadius:12 }}>
         <InfoComponent systemInfo={systemInfo} />
       </Box>
     </Box>

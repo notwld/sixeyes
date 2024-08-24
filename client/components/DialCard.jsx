@@ -10,7 +10,7 @@ const getColor = (usage) => {
 
 const DialCard = ({ title, usage }) => {
   return (
-    <Card sx={{ width: '250px', m: 1 }}>
+    <Card sx={{ width: '250px', m: 1,borderRadius:3 }}>
       <CardContent>
         <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
           {title}
