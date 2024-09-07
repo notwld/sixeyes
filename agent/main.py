@@ -243,7 +243,7 @@ async def disconnect():
 async def start_socketio_client():
     try:
         await sio.connect('http://192.168.1.106:5000')
-        await sio.wait()  # Keep the connection alive
+        await sio.wait()  # connection is alive 
     except Exception as e:
         print(f"Failed to connect to master server: {e}")
 
@@ -255,5 +255,4 @@ if __name__ == '__main__':
     client_thread.daemon = True 
     client_thread.start()
 
-    # Start the Flask-SocketIO server
     socketio.run(app, debug=True, host="0.0.0.0", port=3000)
