@@ -39,6 +39,7 @@ python3 -m venv venv
 
 echo "Activating virtual environment..."
 source venv/bin/activate
+curl -O https://github.com/notwld/sixeyes/blob/master/agent/requirement.txt
 
 if [ -f requirements.txt ]; then
     echo "Installing requirements..."
@@ -50,6 +51,7 @@ fi
 
 if [ -f main.py ]; then
     echo "Running main.py..."
+    chmod +x main.py
     python main.py -i $1 -p $2 -name $3
 else
     echo "main.py not found."

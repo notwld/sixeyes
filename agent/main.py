@@ -34,7 +34,7 @@ BASE_DIR = f'/home/{os.getlogin()}'
 # Caching variables
 cached_public_ip = None
 last_ip_fetch_time = None
-IP_CACHE_DURATION = timedelta(minutes=1)  # Cache duration of 15 minutes
+IP_CACHE_DURATION = timedelta(minutes=1)  
 
 def list_files(directory):
     files = []
@@ -125,7 +125,7 @@ def create_file():
 
 @app.route('/get_content', methods=['POST'])
 def get_file_content_api():
-    print(request.json)  # Debugging: Print request JSON data
+    print(request.json)  
     data = request.get_json()
     path = data.get('path')
     filename = data.get('filename')
@@ -141,21 +141,16 @@ def get_file_content_api():
 @app.route('/download/<path:file_path>', methods=['GET'])
 def download_file(file_path):
     try:
-        # Decode the file path
         decoded_file_path = unquote(file_path)
 
-        # Construct the absolute file path
         absolute_file_path = os.path.normpath(os.path.join(BASE_DIR, decoded_file_path))
         # print(absolute_file_path)
-        # Check if the resolved absolute path is within the allowed directory (BASE_DIR)
         if not absolute_file_path.startswith(BASE_DIR):
             return jsonify({'error': 'Invalid file path or unauthorized access'}), 403
 
-        # Check if the file exists and is a regular file
         if not os.path.isfile(absolute_file_path):
             return jsonify({'error': 'File not found or invalid path'}), 404
 
-        # Serve the file for download
         # print(decoded_file_path.split(BASE_DIR)[0],decoded_file_path.split(BASE_DIR)[1])
         return send_from_directory(os.path.dirname(absolute_file_path), os.path.basename(absolute_file_path), as_attachment=True)
 
