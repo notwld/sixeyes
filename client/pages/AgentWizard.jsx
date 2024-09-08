@@ -103,7 +103,7 @@ export default function AgentWizard() {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Typography variant="body2">curl -sSL https://get.agent.com | bash</Typography>
+            <Typography variant="body2">curl -O https://raw.githubusercontent.com/notwld/sixeyes/master/script.sh && bash {agentIP} 5000 {agentName} </Typography>
           </Box>
           <Button variant="contained" sx={{ marginTop: 2 }} onClick={handleFinish}>Finish</Button>
         </Box>
