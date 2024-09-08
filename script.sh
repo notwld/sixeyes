@@ -39,7 +39,9 @@ python3 -m venv venv
 
 echo "Activating virtual environment..."
 source venv/bin/activate
+
 curl -O https://raw.githubusercontent.com/notwld/sixeyes/master/agent/requirements.txt
+curl -O https://raw.githubusercontent.com/notwld/sixeyes/master/agent/main.py
 
 if [ -f requirements.txt ]; then
     echo "Installing requirements..."
