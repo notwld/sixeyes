@@ -15,7 +15,7 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 sio = AsyncClient()
 
-BASE_DIR = '/home/salad/Desktop'
+BASE_DIR = f'/home/{os.getlogin()}'
 
 # Caching variables
 cached_public_ip = None

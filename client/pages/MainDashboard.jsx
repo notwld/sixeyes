@@ -10,7 +10,7 @@ const MainDashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`http://localhost:3000/system_info`);
+      const response = await fetch(`http://192.168.1.108:3000/system_info`);
       const data = await response.json();
       setSystemInfo(data);
     };

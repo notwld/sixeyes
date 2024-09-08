@@ -13,7 +13,6 @@ const WelcomePage = () => {
       bgcolor="background.default"
       px={3}
     >
-      <RemoveRedEye color="primary" sx={{ fontSize: 200 }} />
       <Typography variant="h1" color="text.primary" gutterBottom>
         Welcome to sixeyes.
       </Typography>
