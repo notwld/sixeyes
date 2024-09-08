@@ -9,6 +9,20 @@ from flask_socketio import SocketIO, emit
 from socketio import AsyncClient
 import asyncio
 import threading
+import argparse
+
+from urllib.parse import unquote
+
+parser = argparse.ArgumentParser(description="Agent server for remote file management and system information")
+parser.add_argument('-i', '--ip', type=str, help='Master server IP address')
+parser.add_argument('-p', '--port', type=int, help='Master server port number')
+parser.add_argument('-name', '--name', type=str, help='Agent name')
+
+args = parser.parse_args()
+
+ip_address = args.ip
+port_number = args.port
+agent_name = args.name
 
 app = Flask(__name__)
 CORS(app)
@@ -227,22 +241,22 @@ def system_info():
 @sio.event
 async def connect():
     print("Connected to the master server")
-    ip = get_public_ip()
     await sio.emit('get_system_info_from_agent', {
-        "public_ip": ip
+        "public_ip": ip_address,
+        "name": agent_name
     })
 
 @sio.event
 async def disconnect():
     print("Disconnected from the master server")
-    ip = get_public_ip()
     await sio.emit('get_system_info_from_agent', {
-        "public_ip": ip
+        "public_ip": ip_address,
+        "name": agent_name
     })
 
 async def start_socketio_client():
     try:
-        await sio.connect('http://192.168.1.106:5000')
+        await sio.connect(f'http://{ip_address}:{port_number}')
         await sio.wait()  # connection is alive 
     except Exception as e:
         print(f"Failed to connect to master server: {e}")
