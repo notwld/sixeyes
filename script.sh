@@ -50,7 +50,7 @@ fi
 
 if [ -f main.py ]; then
     echo "Running main.py..."
-    python main.py
+    python main.py -i $1 -p $2 -name $3
 else
     echo "main.py not found."
     exit 1
