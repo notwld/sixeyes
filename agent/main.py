@@ -202,18 +202,14 @@ def get_system_info():
     system_info['MinFrequency'] = f"{cpufreq.min:.2f}Mhz"
     system_info['CurrentFrequency'] = f"{cpufreq.current:.2f}Mhz"
     
-    cpu_usage_per_core = {}
-    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
-        cpu_usage_per_core[f"Core_{i}"] = f"{percentage}"
-    system_info['CPUUsagePerCore'] = cpu_usage_per_core
-    system_info['TotalCPUUsage'] = f"{psutil.cpu_percent()}"
+    system_info['TotalCPUUsage'] = f"{psutil.cpu_percent(interval=1)}%"  
     
     memory_info = {}
     svmem = psutil.virtual_memory()
     memory_info['Total'] = get_size(svmem.total)
     memory_info['Available'] = get_size(svmem.available)
     memory_info['Used'] = get_size(svmem.used)
-    memory_info['Percentage'] = f"{svmem.percent}"
+    memory_info['Percentage'] = f"{svmem.percent}%"
     system_info['MemoryInformation'] = memory_info
     
     swap_info = {}
@@ -221,7 +217,7 @@ def get_system_info():
     swap_info['Total'] = get_size(swap.total)
     swap_info['Free'] = get_size(swap.free)
     swap_info['Used'] = get_size(swap.used)
-    swap_info['Percentage'] = f"{swap.percent}"
+    swap_info['Percentage'] = f"{swap.percent}%"
     system_info['Swap'] = swap_info
 
     system_info['PublicIP'] = get_public_ip()

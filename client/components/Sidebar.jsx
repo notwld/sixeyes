@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Switch, FormControlLabel, Button, Typography } from '@mui/material';
+import { Box, Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Switch, FormControlLabel, Button, Typography, colors, rgbToHex } from '@mui/material';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import FolderIcon from '@mui/icons-material/Folder';
 import BuildIcon from '@mui/icons-material/Build';
@@ -75,12 +75,16 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
             }}>
               
               {instances.length > 0 ? instances.map((instance, index) => (
-                <ListItem key={index} button>
+                <ListItem key={index} button style={{
+                  backgroundColor: instance.agentIp===window.location.pathname.split("/")[2] ? "#c6e7ed80" : 'inherit',
+                  borderRadius:instance.agentIp===window.location.pathname.split("/")[2] ? "10px" : 'inherit',
+                }}>
                   <ListItemIcon>
                     <CloudIcon />
                   </ListItemIcon>
                   <ListItemText
                     primary={instance.agentName}
+                    
                     onClick={() => {
                       window.location.href = `/dashboard/${instance.agentIp}`;
                     }}
