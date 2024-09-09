@@ -45,8 +45,8 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
     fetchData();
     const intervalId = setInterval(fetchData, 10000); // Fetch data every 10 seconds
 
-    return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -67,15 +67,32 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
         </Tabs>
         <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
           <TabPanel value={value} index={1}>
-            <List component="nav">
+            <List component="nav" sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+            }}>
+              {instances.length != 0 && <Button
+                variant="contained"
+                onClick={() => {
+                  window.location.href = '/agent/add';
+                }}
+              >
+                + Add New
+              </Button>}
               {instances.length > 0 ? instances.map((instance, index) => (
                 <ListItem key={index} button>
                   <ListItemIcon>
                     <CloudIcon />
                   </ListItemIcon>
-                  <ListItemText primary={instance} onClick={()=>{
-                    window.location.href = `/dashboard/${instance.toString()}`;
-                  }}/>
+                  <ListItemText
+                    primary={instance.agentName}
+                    onClick={() => {
+                      window.location.href = `/dashboard/${instance.agentIp}`;
+                    }}
+                  />
+
                 </ListItem>
               )) : (
                 <ListItem sx={{

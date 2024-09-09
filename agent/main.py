@@ -244,7 +244,7 @@ async def connect():
 @sio.event
 async def disconnect():
     print("Disconnected from the master server")
-    await sio.emit('get_system_info_from_agent', {
+    await sio.emit('agent_disconnected', {
         "public_ip": ip_address,
         "name": agent_name
     })
