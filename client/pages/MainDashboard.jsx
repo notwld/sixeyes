@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import DialCard from '../components/DialCard';
 import InfoComponent from '../components/InfoComponent';
 
 const MainDashboard = () => {
   const { instanceName } = useParams();
+  const location = useLocation();
+  console.log(location.pathname.split("/")[2]);
   const [systemInfo, setSystemInfo] = useState(null);
 
   useEffect(() => {

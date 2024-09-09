@@ -13,7 +13,7 @@ def handle_connect():
     print("Client connected.")
 
 @socketio.on('disconnect')
-def handle_disconnect(data):
+def handle_disconnect():
     print("Client disconnected.")
 
 @socketio.on('get_system_info_from_agent')

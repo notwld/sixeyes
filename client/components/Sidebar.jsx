@@ -73,14 +73,7 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
               alignItems: 'center',
               flexDirection: 'column',
             }}>
-              {instances.length != 0 && <Button
-                variant="contained"
-                onClick={() => {
-                  window.location.href = '/agent/add';
-                }}
-              >
-                + Add New
-              </Button>}
+              
               {instances.length > 0 ? instances.map((instance, index) => (
                 <ListItem key={index} button>
                   <ListItemIcon>
@@ -104,16 +97,20 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
                   <Typography variant="h7" textAlign="center" color="textSecondary" py={3}>
                     No VM connected
                   </Typography>
-                  <Button
+                 
+                </ListItem>
+              )}
+               <Button
                     variant="contained"
+                    sx={{
+                      marginTop:"25px"
+                    }}
                     onClick={() => {
                       window.location.href = '/agent/add';
                     }}
                   >
                     + Add New
                   </Button>
-                </ListItem>
-              )}
             </List>
           </TabPanel>
         </Box>

@@ -237,7 +237,7 @@ def system_info():
 async def connect():
     print("Connected to the master server")
     await sio.emit('get_system_info_from_agent', {
-        "public_ip": ip_address,
+        "public_ip": get_public_ip(),
         "name": agent_name
     })
 
@@ -245,7 +245,7 @@ async def connect():
 async def disconnect():
     print("Disconnected from the master server")
     await sio.emit('agent_disconnected', {
-        "public_ip": ip_address,
+        "public_ip": get_public_ip(),
         "name": agent_name
     })
 
