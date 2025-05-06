@@ -1,0 +1,26 @@
+2025-05-06 14:03:55,270 - websockets.server - INFO - server listening on 0.0.0.0:3001
+2025-05-06 14:03:55,270 - __main__ - INFO - Terminal WebSocket server started on 0.0.0.0:3001
+2025-05-06 14:04:00,056 - websockets.server - INFO - connection open
+2025-05-06 14:04:00,057 - __main__ - INFO - Terminal connection established from 192.168.100.4
+2025-05-06 14:04:00,069 - websockets.server - INFO - connection open
+2025-05-06 14:04:00,069 - __main__ - INFO - Terminal connection established from 192.168.100.4
+2025-05-06 14:04:03,305 - __main__ - INFO - Executing command from 192.168.100.4: ls
+2025-05-06 14:04:07,538 - __main__ - INFO - Executing command from 192.168.100.4: cd ..
+2025-05-06 14:04:11,114 - __main__ - INFO - Executing command from 192.168.100.4: ls
+2025-05-06 14:04:14,645 - __main__ - INFO - Executing command from 192.168.100.4: cd ..
+2025-05-06 14:04:18,651 - __main__ - INFO - Executing command from 192.168.100.4: ls
+2025-05-06 14:04:23,945 - __main__ - INFO - Executing command from 192.168.100.4: pwd
+2025-05-06 14:04:28,455 - __main__ - INFO - Executing command from 192.168.100.4: cd /
+2025-05-06 14:04:31,825 - __main__ - INFO - Executing command from 192.168.100.4: ls
+2025-05-06 14:05:39,061 - websockets.server - INFO - connection open
+2025-05-06 14:05:39,061 - __main__ - INFO - Terminal connection established from 192.168.100.4
+2025-05-06 14:05:39,074 - websockets.server - INFO - connection open
+2025-05-06 14:05:39,074 - __main__ - INFO - Terminal connection established from 192.168.100.4
+2025-05-06 14:05:44,402 - __main__ - INFO - Executing command from 192.168.100.4: sudo pacman -Syu
+2025-05-06 14:06:17,867 - __main__ - INFO - Shutting down terminal server...
+2025-05-06 14:06:17,870 - __main__ - INFO - Terminal server shutdown complete
+2025-05-06 14:06:17,895 - __main__ - ERROR - Unexpected error in terminal handler: Event loop is closed
+2025-05-06 14:06:17,895 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-45' coro=<Server.conn_handler() running at /home/wld/.local/lib/python3.13/site-packages/websockets/asyncio/server.py:395> wait_for=<Future cancelled>>
+2025-05-06 14:06:17,896 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-46' coro=<Connection.keepalive() done, defined at /home/wld/.local/lib/python3.13/site-packages/websockets/asyncio/connection.py:803> wait_for=<Future pending cb=[Task.task_wakeup()]>>

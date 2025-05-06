@@ -33,7 +33,7 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://192.168.1.106:5000/agents`);
+        const response = await fetch(`http://192.168.100.4:5000/agents`);
         const data = await response.json();
         setInstances(data);
         console.log(data);
